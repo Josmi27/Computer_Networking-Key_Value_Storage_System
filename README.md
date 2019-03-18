@@ -1,5 +1,5 @@
 # Computer_Networking-Key_Value_Storage_System
-This project introduces the concept of client/server architecture and caching. 
+This project introduces the concept of client/server architecture and caching! 
 
 A web and proxy server is created that stores and retrieves key-value pairs using socket programming interface. The server only permits commands such as 'GET', 'PUT' and 'DUMP' in the request field, followed by the key and value stored. 
 
