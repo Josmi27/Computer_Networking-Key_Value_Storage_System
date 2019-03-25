@@ -80,7 +80,7 @@ def create_client_socket(server_addr, port):
     #TODO: Implement CreateClientSocket Function
     #############################################
   with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((server_addr, port))
+    s.connect((server_addr, port))
 
 
 
@@ -134,7 +134,6 @@ class KeyValueStore(object):
     #TODO: Implement __init__ Function
     ###########################################
 
-    #HOW DO I CREATE A DICTIONARY HERE?
     self.d = {}
 
 
@@ -157,7 +156,7 @@ class KeyValueStore(object):
     #TODO: Implement GetValue Function
     ###########################################
 
-    '''HOW DO I REFERENCE DICTIONARY IN THIS FUNCTION?'''
+
     for keys in self.d:
       if keys == key:
         return key
@@ -189,8 +188,6 @@ class KeyValueStore(object):
     ###########################################
     #TODO: Implement Keys Function
     ###########################################
-    all_keys = []
-    for keys in self.d:
-      all_keys.append(keys)
+    
 
-    return all_keys
+    return self.d.keys()
