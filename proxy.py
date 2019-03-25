@@ -34,6 +34,7 @@ MAX_CACHE_AGE_SEC = 60.0  # 1 minute
 
 def forward_command_to_server(command, server_addr, server_port):
 
+
   """Opens a TCP socket to the server, sends a command, and returns response.
 
   Args:
@@ -50,11 +51,15 @@ def forward_command_to_server(command, server_addr, server_port):
 
   #opens TCP socket to server
   server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-  server_socket.bind((server_addr, server_port))
+  server_socket.connect((server_addr, server_port))
 
-  #how to send the command? In the geeks4geeks resource, they parsed stuff to obtain a URL,
-  #and went from there. I don't know what to do since this is a little different.
-  pass
+  #how to send the command? SENDALL COMMAND
+  server_socket.sendall(command)
+
+
+  data = server_socket.recv(1024)
+  return eval(repr(data))
+
 
 def check_cached_response(command_line, cache):
 
@@ -64,13 +69,17 @@ def check_cached_response(command_line, cache):
   ##########################
   #TODO: Implement section
   ##########################
-
-  # GET commands can be cached.
+  if cmd == "PUT":
+    cache[name] = text
+    
 
   ############################
   #TODO: Implement section
   ############################
 
+  #stores the key/value information for all GET requests in cache
+  if cmd == "GET":
+    cache[name] = text
 
 
 def proxy_client_command(sock, server_addr, server_port, cache):
@@ -93,6 +102,7 @@ def proxy_client_command(sock, server_addr, server_port, cache):
   #TODO: Implement ProxyClientCommand
   ###########################################
 
+  # Review the socket methods
   pass
 
 
@@ -112,6 +122,7 @@ def main():
   #################################
   #TODO: Close socket's connection
   #################################
+  server_sock.close()
 
 
 main()
