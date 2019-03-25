@@ -37,6 +37,8 @@ from __future__ import print_function
 # functions are in library.py.
 import library
 
+import proxy
+
 
 # The port that we accept connections on. (A.k.a. "listen" on.)
 LISTENING_PORT = 7777
@@ -60,7 +62,25 @@ def put_command(name, text, database):
   ##########################################
   #TODO: Implement PUT function
   ##########################################
-  pass
+
+    #
+    #   args = command.strip().split(' ')
+    # command = None
+    # if args:
+    #   command = args[0]
+    # arg1 = None
+    # if len(args) > 1:
+    #   arg1 = args[1]
+    # remainder = None
+    # if len(args) > 2:
+    #   remainder = ' '.join(args[2:])
+    # return command, arg1, remainder
+
+  #name = key
+  #text = value
+  #PUT stores the key and a specified value in the database.
+  database.d[name] = text
+  return name + "=" + text
 
 def get_command(name, database):
   """Handle the GET command for a server.
@@ -77,7 +97,14 @@ def get_command(name, database):
   ##########################################
   #TODO: Implement GET function
   ##########################################
-  pass
+
+  #implementation with sending the request through the proxy server
+  proxy_variables_accessed = proxy.main()
+  if name in proxy_variables_accessed.cache:
+    return proxy_variables_accessed.cache.get(name, "Value not found in cache. Please try again.")
+  else:
+    return database.d.get(name, "Value not found in database. Please try again.")
+
 
 def dump_command(database):
   """Creates a function to handle the DUMP command for a server.
@@ -94,6 +121,7 @@ def dump_command(database):
   ##########################################
   #TODO: Implement DUMP function
   ##########################################
+
   pass
 
 
@@ -144,6 +172,6 @@ def main():
     #################################
     #TODO: Close socket's connection
     #################################
-
+    server_sock.close()
 
 main()
