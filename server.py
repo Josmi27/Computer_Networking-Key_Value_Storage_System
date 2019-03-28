@@ -37,14 +37,12 @@ from __future__ import print_function
 # functions are in library.py.
 import library
 
-import proxy
-
 
 # The port that we accept connections on. (A.k.a. "listen" on.)
 LISTENING_PORT = 7777
 
 
-def put_command(name, text, database):
+def PutCommand(name, text, database):
   """Handle the PUT command for a server.
 
   PUT's first argument is the name of the key to store the value under.
@@ -59,30 +57,14 @@ def put_command(name, text, database):
     then the string describes the error.
   """
   # Store the value in the database.
-  ##########################################
-  #TODO: Implement PUT function
-  ##########################################
+  try:
+    database.StoreValue(name, text)
+    return '%s = %s\n' %(name, text)
+  except:
+    return 'Error while storing [%s = %s].\n' %(name, text)
 
-    #
-    #   args = command.strip().split(' ')
-    # command = None
-    # if args:
-    #   command = args[0]
-    # arg1 = None
-    # if len(args) > 1:
-    #   arg1 = args[1]
-    # remainder = None
-    # if len(args) > 2:
-    #   remainder = ' '.join(args[2:])
-    # return command, arg1, remainder
 
-  #name = key
-  #text = value
-  #PUT stores the key and a specified value in the database.
-  database.d[name] = text
-  return name + "=" + text
-
-def get_command(name, database):
+def GetCommand(name, database):
   """Handle the GET command for a server.
 
   GET takes a single argument: the name of the key to look up.
@@ -94,19 +76,14 @@ def get_command(name, database):
     A human readable string describing the result. If there is an error,
     then the string describes the error.
   """
-  ##########################################
-  #TODO: Implement GET function
-  ##########################################
-
-  #implementation with sending the request through the proxy server
-  proxy_variables_accessed = proxy.main()
-  if name in proxy_variables_accessed.cache:
-    return proxy_variables_accessed.cache.get(name, "Value not found in cache. Please try again.")
+  value = database.GetValue(name)
+  if value != None:
+    return '%s = %s\n' %(name, value)
   else:
-    return database.d.get(name, "Value not found in database. Please try again.")
+    return 'Error. Name %s not found.\n' %(name)
 
 
-def dump_command(database):
+def DumpCommand(database):
   """Creates a function to handle the DUMP command for a server.
 
   DUMP takes no arguments. It always returns a CSV containing all keys.
@@ -118,60 +95,57 @@ def dump_command(database):
     then the string describes the error.
   """
 
-  ##########################################
-  #TODO: Implement DUMP function
-  ##########################################
+  # result = ''
+  #
+  # for key in keys:
+  #   value = database.GetValue(key)
+  #
+  #   if value != None:
+  #     result += '%s = %s \n' % (key, value)
 
-  pass
+  #return using keys function from library
+  return database.Keys()
 
 
-def send_text(sock, text):
+
+
+def SendText(sock, text):
   """Sends the result over the socket along with a newline."""
   sock.send('%s\n' % text)
 
 
 def main():
-
   # Store all key/value pairs in here.
   database = library.KeyValueStore()
-
   # The server socket that will listen on the specified port. If you don't
   # have permission to listen on the port, try a higher numbered port.
-  server_sock = library.create_server_socket(LISTENING_PORT)
-
-
+  server_sock = library.CreateServerSocket(LISTENING_PORT)
 
   # Handle commands indefinitely. Use ^C to exit the program.
   while True:
-
     # Wait until a client connects and then get a socket that connects to the
     # client.
-    client_sock, (address, port) = library.connect_client_to_server(server_sock)
+    client_sock, (address, port) = library.ConnectClientToServer(server_sock)
     print('Received connection from %s:%d' % (address, port))
 
     # Read a command.
-    command_line = library.read_command(client_sock)
-    command, name, text = library.parse_command(command_line)
+    command_line = library.ReadCommand(client_sock)
+    command, name, text = library.ParseCommand(command_line)
 
     # Execute the command based on the first word in the command line.
     if command == 'PUT':
-      result = put_command(name, text, database)
+      result = PutCommand(name, text, database)
     elif command == 'GET':
-      result = get_command(name, database)
+      result = GetCommand(name, database)
     elif command == 'DUMP':
-      result = dump_command(database)
+      result = DumpCommand(database)
     else:
-      send_text(client_sock, 'Unknown command %s' % command)
+      SendText(client_sock, 'Unknown command %s' % command)
 
-    send_text(client_sock, result)
-
-
-
+    SendText(client_sock, result)
     # We're done with the client, so clean up the socket.
+    client_sock.close()
 
-    #################################
-    #TODO: Close socket's connection
-    #################################
-    server_sock.close()
+
 
 main()
