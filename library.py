@@ -37,9 +37,7 @@ def create_server_socket(port):
     An socket that implements TCP/IP.
   """
 
-    #############################################
-    #TODO: Implement CreateServerSocket Function
-    #############################################
+
   host = 'localhost'
   port = port
 
@@ -47,19 +45,14 @@ def create_server_socket(port):
   server_s.bind((host, port))
   server_s.listen(10)
 
-  #returns a listening socket
+  # Returns a listening socket
   return server_s
 
 
-
 def connect_client_to_server(server_sock):
-    # Wait until a client connects and then get a socket that connects to the
-    # client.
 
-
-    #############################################
-    #TODO: Implement CreateClientSocket Function
-    #############################################
+  # Waits until a client connects and then get a socket that connects to the
+  # client.
   return server_sock.accept()
 
 
@@ -67,35 +60,29 @@ def create_client_socket(server_addr, port):
 
   """Creates a socket that connects to a port on a server."""
 
-    #############################################
-    #TODO: Implement CreateClientSocket Function
-    #############################################
+
   client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
   client_socket.connect((server_addr, port))
   return client_socket
 
 
-
 def read_command(sock):
-
 
   """Read a single command from a socket. The command must end in newline."""
 
-    #############################################
-    #TODO: Implement ReadCommand Function
-    #############################################
+
   command = ''
 
-  #checking if command ends in newline
+  # Checking if command ends in newline
   while not command or command[-1] != '\n':
       command = sock.recv(COMMAND_BUFFER_SIZE)
 
-  #truncate it up until the new line
+  # Truncates command up until the new line
   return command.strip()
 
 
-
 def parse_command(command):
+
   """Parses a command and returns the command name, first arg, and remainder.
 
   All commands are of the form:
@@ -109,6 +96,8 @@ def parse_command(command):
   Returns:
     command, arg1, remainder. Each of these can be None.
   """
+
+
   args = command.strip().split(' ')
   command = None
   if args:
@@ -123,23 +112,21 @@ def parse_command(command):
 
 
 class KeyValueStore(object):
+
   """A dictionary of strings keyed by strings.
 
   The values can time out once they get sufficiently old. Otherwise, this
   acts much like a dictionary.
   """
 
+
   def __init__(self):
 
-
-    ###########################################
-    #TODO: Implement __init__ Function
-    ###########################################
     self.d = {}
 
 
-
   def get_value(self, key, max_age_in_sec=None):
+
     """Gets a cached value or `None`.
 
     Values older than `max_age_in_sec` seconds are not returned.
@@ -151,13 +138,10 @@ class KeyValueStore(object):
     Returns:
       None or the value.
     """
-    # Check if we've ever put something in the cache.
-
-    ###########################################
-    #TODO: Implement GetValue Function
-    ###########################################
 
 
+    # Checks if we've ever put something in the cache.
+    # Otherwise, return None
     for keys in self.d:
       if keys == key:
         return self.d[key]
@@ -167,8 +151,8 @@ class KeyValueStore(object):
     return None
 
 
-
   def store_value(self, key, value):
+
     """Stores a value under a specific key.
 
     Args:
@@ -176,17 +160,13 @@ class KeyValueStore(object):
       value: string. A value to store.
     """
 
-    ###########################################
-    #TODO: Implement StoreValue Function
-    ###########################################
+
     self.d[key] = value
 
 
-
   def all_keys(self):
+
     """Returns a list of all keys in the datastore."""
 
-    ###########################################
-    #TODO: Implement Keys Function
-    ###########################################
+
     return list(self.d.keys())
