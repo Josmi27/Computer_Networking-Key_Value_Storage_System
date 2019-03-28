@@ -40,17 +40,19 @@ def create_server_socket(port):
     #############################################
     #TODO: Implement CreateServerSocket Function
     #############################################
-  host = ''
+  host = 'localhost'
   port = port
 
-  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.bind((host, port))
-    s.listen(5)
+  server_s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  server_s.bind((host, port))
+  server_s.listen(10)
+
+  #returns a listening socket
+  return server_s
 
 
 
 def connect_client_to_server(server_sock):
-
     # Wait until a client connects and then get a socket that connects to the
     # client.
 
@@ -58,38 +60,38 @@ def connect_client_to_server(server_sock):
     #############################################
     #TODO: Implement CreateClientSocket Function
     #############################################
+  return server_sock.accept()
 
-  conn, address = server_sock.accept()
-  # we now have a new socket object from accept(), because when a client connects, it
-  # returns a new socket object representing the connection and a tuple holding the address
-  # of the client.
-  with conn:
-    print('Connected by', address)
-    while True:
-      data = conn.recv(1024)
-      if not data:
-        break
-      conn.sendall(data)
-
-  conn.close()
 
 def create_client_socket(server_addr, port):
+
   """Creates a socket that connects to a port on a server."""
 
     #############################################
     #TODO: Implement CreateClientSocket Function
     #############################################
-  with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    s.connect((server_addr, port))
+  client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+  client_socket.connect((server_addr, port))
+  return client_socket
 
 
 
 def read_command(sock):
+
+
   """Read a single command from a socket. The command must end in newline."""
 
     #############################################
     #TODO: Implement ReadCommand Function
     #############################################
+  command = ''
+
+  #checking if command ends in newline
+  while not command or command[-1] != '\n':
+      command = sock.recv(COMMAND_BUFFER_SIZE)
+
+  #truncate it up until the new line
+  return command.strip()
 
 
 
@@ -133,7 +135,6 @@ class KeyValueStore(object):
     ###########################################
     #TODO: Implement __init__ Function
     ###########################################
-
     self.d = {}
 
 
@@ -159,7 +160,7 @@ class KeyValueStore(object):
 
     for keys in self.d:
       if keys == key:
-        return key
+        return self.d[key]
       else:
         continue
 
@@ -182,12 +183,10 @@ class KeyValueStore(object):
 
 
 
-  def keys(self):
+  def all_keys(self):
     """Returns a list of all keys in the datastore."""
 
     ###########################################
     #TODO: Implement Keys Function
     ###########################################
-    
-
-    return self.d.keys()
+    return list(self.d.keys())
